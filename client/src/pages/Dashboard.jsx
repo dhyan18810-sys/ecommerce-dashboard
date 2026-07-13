@@ -28,25 +28,25 @@ function Dashboard() {
     const metrics = [
         {
             label: "Total Orders",
-            value: dashboard.TOTAL_ORDERS,
+            value: dashboard.TOTAL_ORDERS || 0,
             color: "#3B82F6",
             icon: "📦"
         },
         {
             label: "Total Revenue",
-            value: `₹ ${dashboard.TOTAL_REVENUE.toLocaleString()}`,
+            value: `₹ ${(dashboard.TOTAL_REVENUE || 0).toLocaleString()}`,
             color: "#10B981",
             icon: "💰"
         },
         {
             label: "Customers",
-            value: dashboard.TOTAL_CUSTOMERS,
+            value: dashboard.TOTAL_CUSTOMERS || 0,
             color: "#F59E0B",
             icon: "👥"
         },
         {
             label: "Products Sold",
-            value: dashboard.TOTAL_PRODUCTS_SOLD.toLocaleString(),
+            value: (dashboard.TOTAL_PRODUCTS_SOLD || 0).toLocaleString(),
             color: "#8B5CF6",
             icon: "🛍️"
         }

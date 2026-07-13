@@ -19,8 +19,8 @@ function Analytics() {
     }, []);
 
     const topProduct = analytics.length > 0 ? analytics[0] : null;
-    const totalRevenue = analytics.reduce((sum, item) => sum + item.REVENUE, 0);
-    const totalUnits = analytics.reduce((sum, item) => sum + item.TOTAL_SOLD, 0);
+    const totalRevenue = analytics.reduce((sum, item) => sum + (item.REVENUE || 0), 0);
+    const totalUnits = analytics.reduce((sum, item) => sum + (item.TOTAL_SOLD || 0), 0);
 
     return (
         <div style={containerStyle}>
@@ -66,8 +66,8 @@ function Analytics() {
                                                 <span style={rankBadgeStyle}>{index + 1}</span>
                                             </td>
                                             <td style={tableCellStyle}>{item.PRODUCT_NAME}</td>
-                                            <td style={tableCellStyle}>{item.TOTAL_SOLD.toLocaleString()}</td>
-                                            <td style={tableCellStyle}>₹ {item.REVENUE.toLocaleString()}</td>
+                                            <td style={tableCellStyle}>{(item.TOTAL_SOLD || 0).toLocaleString()}</td>
+                                            <td style={tableCellStyle}>₹ {(item.REVENUE || 0).toLocaleString()}</td>
                                         </tr>
                                     ))
                                 ) : (
