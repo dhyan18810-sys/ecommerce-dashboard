@@ -79,14 +79,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Code */
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
 code {
+  display: inline-flex;
   font-size: 15px;
   line-height: 135%;
   padding: 4px 8px;
+  border-radius: 4px;
+  color: var(--text-h);
   background: var(--code-bg);
 }
