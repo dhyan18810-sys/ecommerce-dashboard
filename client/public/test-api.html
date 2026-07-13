@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Configuration Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #0f0; }
+        .box { border: 1px solid #0f0; padding: 15px; margin: 10px 0; }
+        .error { color: #f00; }
+        .success { color: #0f0; }
+    </style>
+</head>
+<body>
+    <h1>🔍 API Configuration Test</h1>
+    <div class="box">
+        <h2>Environment Check</h2>
+        <p>VITE_API_URL from build: <span id="api-url"></span></p>
+        <p>Current origin: <span id="origin"></span></p>
+        <p>Expected API calls to: <span id="expected"></span></p>
+    </div>
+    
+    <div class="box">
+        <h2>Test API Call</h2>
+        <button onclick="testAPI()">Test /api/dashboard</button>
+        <pre id="result"></pre>
+    </div>
+
+    <script>
+        // Show what the environment variable is
+        const apiUrl = import.meta.env.VITE_API_URL || '(empty - same domain)';
+        document.getElementById('api-url').textContent = apiUrl;
+        document.getElementById('origin').textContent = window.location.origin;
+        document.getElementById('expected').textContent = apiUrl || window.location.origin;
+        
+        async function testAPI() {
+            const result = document.getElementById('result');
+            result.textContent = 'Testing...';
+            
+            try {
+                const fullUrl = apiUrl ? `${apiUrl}/api/dashboard` : '/api/dashboard';
+                result.textContent = `Calling: ${fullUrl}\n\n`;
+                
+                const response = await fetch(fullUrl);
+                const data = await response.json();
+                
+                result.textContent += `✅ SUCCESS!\n\n`;
+                result.textContent += JSON.stringify(data, null, 2);
+                result.className = 'success';
+            } catch (error) {
+                result.textContent += `❌ ERROR:\n\n${error.message}`;
+                result.className = 'error';
+            }
+        }
+    </script>
+</body>
+</html>
