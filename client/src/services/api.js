@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// Use relative path in production, localhost in development
-const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://localhost:5000");
+// Empty base URL - will use same domain (works for both local vercel dev and production)
+const API_URL = "";
 
 const apiClient = axios.create({
   baseURL: API_URL,
