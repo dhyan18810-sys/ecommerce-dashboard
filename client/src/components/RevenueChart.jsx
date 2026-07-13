@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { getRevenue } from "../services/api";
 
 import {
     ResponsiveContainer,
@@ -17,8 +17,7 @@ function RevenueChart() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios
-            .get("http://localhost:5000/revenue")
+        getRevenue()
             .then((res) => {
                 setData(res.data);
                 setLoading(false);

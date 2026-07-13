@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { getOrders } from "../services/api";
 
 function Orders() {
 
@@ -8,7 +8,7 @@ function Orders() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get("http://localhost:5000/orders")
+        getOrders()
             .then((res) => {
                 setOrders(res.data);
                 setLoading(false);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { getDashboard } from "../services/api";
 import RevenueChart from "../components/RevenueChart";
 
 function Dashboard() {
@@ -14,8 +14,7 @@ function Dashboard() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios
-            .get("http://localhost:5000/dashboard")
+        getDashboard()
             .then((res) => {
                 setDashboard(res.data);
                 setLoading(false);

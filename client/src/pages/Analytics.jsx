@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { getAnalytics } from "../services/api";
 
 function Analytics() {
 
@@ -7,7 +7,7 @@ function Analytics() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get("http://localhost:5000/analytics")
+        getAnalytics()
             .then((res) => {
                 setAnalytics(res.data);
                 setLoading(false);

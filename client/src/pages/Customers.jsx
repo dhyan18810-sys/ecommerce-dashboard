@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { getCustomers } from "../services/api";
 
 function Customers() {
 
@@ -7,7 +7,7 @@ function Customers() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get("http://localhost:5000/customers")
+        getCustomers()
             .then((res) => {
                 setCustomers(res.data);
                 setLoading(false);
