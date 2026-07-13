@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "buildCommand": "cd client && npm install && npm run build",
+  "outputDirectory": "client/dist",
+  "framework": "vite",
+  "env": {
+    "SNOWFLAKE_ACCOUNT": "@SNOWFLAKE_ACCOUNT",
+    "SNOWFLAKE_USERNAME": "@SNOWFLAKE_USERNAME",
+    "SNOWFLAKE_PASSWORD": "@SNOWFLAKE_PASSWORD",
+    "SNOWFLAKE_WAREHOUSE": "@SNOWFLAKE_WAREHOUSE",
+    "SNOWFLAKE_DATABASE": "@SNOWFLAKE_DATABASE",
+    "SNOWFLAKE_SCHEMA": "@SNOWFLAKE_SCHEMA",
+    "SNOWFLAKE_ROLE": "@SNOWFLAKE_ROLE"
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
