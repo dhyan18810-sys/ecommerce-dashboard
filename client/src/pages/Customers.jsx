@@ -9,11 +9,13 @@ function Customers() {
     useEffect(() => {
         getCustomers()
             .then((res) => {
-                setCustomers(res.data);
+                const customersData = Array.isArray(res.data) ? res.data : [];
+                setCustomers(customersData);
                 setLoading(false);
             })
             .catch((err) => {
                 console.log(err);
+                setCustomers([]);
                 setLoading(false);
             });
     }, []);

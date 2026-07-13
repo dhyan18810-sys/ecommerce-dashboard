@@ -9,11 +9,13 @@ function Analytics() {
     useEffect(() => {
         getAnalytics()
             .then((res) => {
-                setAnalytics(res.data);
+                const analyticsData = Array.isArray(res.data) ? res.data : [];
+                setAnalytics(analyticsData);
                 setLoading(false);
             })
             .catch((err) => {
                 console.log(err);
+                setAnalytics([]);
                 setLoading(false);
             });
     }, []);

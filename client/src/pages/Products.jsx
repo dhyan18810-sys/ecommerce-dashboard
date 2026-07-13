@@ -9,11 +9,13 @@ function Products() {
     useEffect(() => {
         getProducts()
             .then((res) => {
-                setProducts(res.data);
+                const productsData = Array.isArray(res.data) ? res.data : [];
+                setProducts(productsData);
                 setLoading(false);
             })
             .catch((err) => {
                 console.log(err);
+                setProducts([]);
                 setLoading(false);
             });
     }, []);

@@ -19,11 +19,14 @@ function RevenueChart() {
     useEffect(() => {
         getRevenue()
             .then((res) => {
-                setData(res.data);
+                // Ensure data is always an array
+                const revenueData = Array.isArray(res.data) ? res.data : [];
+                setData(revenueData);
                 setLoading(false);
             })
             .catch((err) => {
                 console.log(err);
+                setData([]); // Set empty array on error
                 setLoading(false);
             });
     }, []);

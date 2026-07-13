@@ -16,7 +16,14 @@ function Dashboard() {
     useEffect(() => {
         getDashboard()
             .then((res) => {
-                setDashboard(res.data);
+                // Ensure dashboard data has the expected structure
+                const dashboardData = res.data || {};
+                setDashboard({
+                    TOTAL_ORDERS: dashboardData.TOTAL_ORDERS || 0,
+                    TOTAL_REVENUE: dashboardData.TOTAL_REVENUE || 0,
+                    TOTAL_CUSTOMERS: dashboardData.TOTAL_CUSTOMERS || 0,
+                    TOTAL_PRODUCTS_SOLD: dashboardData.TOTAL_PRODUCTS_SOLD || 0
+                });
                 setLoading(false);
             })
             .catch((err) => {

@@ -10,11 +10,13 @@ function Orders() {
     useEffect(() => {
         getOrders()
             .then((res) => {
-                setOrders(res.data);
+                const ordersData = Array.isArray(res.data) ? res.data : [];
+                setOrders(ordersData);
                 setLoading(false);
             })
             .catch((err) => {
                 console.log(err);
+                setOrders([]);
                 setLoading(false);
             });
     }, []);
