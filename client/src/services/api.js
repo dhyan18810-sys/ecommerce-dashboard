@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// Empty base URL - will use same domain (works for both local vercel dev and production)
-const API_URL = "";
+// Use environment variable or default to empty (production)
+const API_URL = import.meta.env.VITE_API_URL || "";
 
 const apiClient = axios.create({
   baseURL: API_URL,
