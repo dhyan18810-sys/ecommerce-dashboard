@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// Use relative path in production, localhost in development
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://localhost:5000");
 
 const apiClient = axios.create({
   baseURL: API_URL,
@@ -17,25 +18,25 @@ apiClient.interceptors.response.use(
 );
 
 // Dashboard endpoints
-export const getDashboard = () => apiClient.get("/dashboard");
-export const getMetrics = () => apiClient.get("/admin/status");
+export const getDashboard = () => apiClient.get("/api/dashboard");
+export const getMetrics = () => apiClient.get("/api/status");
 
 // Products endpoint
-export const getProducts = () => apiClient.get("/products");
+export const getProducts = () => apiClient.get("/api/products");
 
 // Orders endpoint
-export const getOrders = () => apiClient.get("/orders");
+export const getOrders = () => apiClient.get("/api/orders");
 
 // Revenue endpoint
-export const getRevenue = () => apiClient.get("/revenue");
+export const getRevenue = () => apiClient.get("/api/revenue");
 
 // Customers endpoint
-export const getCustomers = () => apiClient.get("/customers");
+export const getCustomers = () => apiClient.get("/api/customers");
 
 // Analytics endpoint
-export const getAnalytics = () => apiClient.get("/analytics");
+export const getAnalytics = () => apiClient.get("/api/analytics");
 
 // Health check
-export const getHealth = () => apiClient.get("/api/hello").catch(() => apiClient.get("/health"));
+export const getHealth = () => apiClient.get("/api/hello");
 
 export default apiClient;
