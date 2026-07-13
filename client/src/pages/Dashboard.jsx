@@ -11,84 +11,152 @@ function Dashboard() {
         TOTAL_PRODUCTS_SOLD: 0
     });
 
-    useEffect(() => {
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
         axios
             .get("http://localhost:5000/dashboard")
             .then((res) => {
                 setDashboard(res.data);
+                setLoading(false);
             })
             .catch((err) => {
                 console.log(err);
+                setLoading(false);
             });
-
     }, []);
 
+    const metrics = [
+        {
+            label: "Total Orders",
+            value: dashboard.TOTAL_ORDERS,
+            color: "#3B82F6",
+            icon: "📦"
+        },
+        {
+            label: "Total Revenue",
+            value: `₹ ${dashboard.TOTAL_REVENUE.toLocaleString()}`,
+            color: "#10B981",
+            icon: "💰"
+        },
+        {
+            label: "Customers",
+            value: dashboard.TOTAL_CUSTOMERS,
+            color: "#F59E0B",
+            icon: "👥"
+        },
+        {
+            label: "Products Sold",
+            value: dashboard.TOTAL_PRODUCTS_SOLD.toLocaleString(),
+            color: "#8B5CF6",
+            icon: "🛍️"
+        }
+    ];
+
     return (
-        <div
-            style={{
-                padding: "20px",
-                background: "#f5f5f5",
-                minHeight: "100vh"
-            }}
-        >
-            <h1>Business Analytics Dashboard</h1>
+        <div style={containerStyle}>
+            <div style={headerStyle}>
+                <h1 style={titleStyle}>Dashboard</h1>
+                <p style={subtitleStyle}>Welcome back! Here's your business overview.</p>
+            </div>
 
-            <div
-                style={{
-                    display: "flex",
-                    gap: "20px",
-                    flexWrap: "wrap",
-                    marginTop: "30px"
-                }}
-            >
-
-                <div style={cardStyle}>
-                    <h3>Total Orders</h3>
-                    <h1>{dashboard.TOTAL_ORDERS}</h1>
-                </div>
-
-                <div style={cardStyle}>
-                    <h3>Total Revenue</h3>
-                    <h1>₹ {dashboard.TOTAL_REVENUE}</h1>
-                </div>
-
-                <div style={cardStyle}>
-                    <h3>Total Customers</h3>
-                    <h1>{dashboard.TOTAL_CUSTOMERS}</h1>
-                </div>
-
-                <div style={cardStyle}>
-                    <h3>Products Sold</h3>
-                    <h1>{dashboard.TOTAL_PRODUCTS_SOLD}</h1>
-                </div>
-
+            {/* Metrics Grid */}
+            <div style={metricsGridStyle}>
+                {metrics.map((metric, index) => (
+                    <div key={index} style={getMetricCardStyle(metric.color)}>
+                        <div style={metricHeaderStyle}>
+                            <span style={iconStyle}>{metric.icon}</span>
+                            <span style={labelStyle}>{metric.label}</span>
+                        </div>
+                        <div style={valueStyle}>{metric.value}</div>
+                    </div>
+                ))}
             </div>
 
             {/* Revenue Chart */}
-
-            <div style={{ marginTop: "40px" }}>
+            <div style={chartContainerStyle}>
                 <RevenueChart />
             </div>
-
         </div>
     );
 }
 
-const cardStyle = {
+const containerStyle = {
+    padding: "40px",
+    background: "#FFFFFF",
+    minHeight: "100vh",
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif"
+};
 
-    width: "220px",
+const headerStyle = {
+    marginBottom: "40px"
+};
 
-    background: "white",
+const titleStyle = {
+    fontSize: "32px",
+    fontWeight: "700",
+    color: "#1F2937",
+    margin: "0 0 8px 0",
+    letterSpacing: "-0.5px"
+};
 
-    padding: "20px",
+const subtitleStyle = {
+    fontSize: "14px",
+    color: "#6B7280",
+    margin: "0",
+    fontWeight: "400"
+};
 
-    borderRadius: "10px",
+const metricsGridStyle = {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+    gap: "20px",
+    marginBottom: "40px"
+};
 
-    boxShadow: "0px 0px 10px rgba(0,0,0,0.15)",
+const getMetricCardStyle = (color) => ({
+    background: "#F9FAFB",
+    padding: "24px",
+    borderRadius: "12px",
+    border: `1px solid #E5E7EB`,
+    transition: "all 0.3s ease",
+    cursor: "default",
+    borderLeft: `4px solid ${color}`,
+    "&:hover": {
+        boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
+    }
+});
 
-    textAlign: "center"
+const metricHeaderStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    marginBottom: "16px"
+};
 
+const iconStyle = {
+    fontSize: "24px"
+};
+
+const labelStyle = {
+    fontSize: "13px",
+    fontWeight: "500",
+    color: "#6B7280",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px"
+};
+
+const valueStyle = {
+    fontSize: "28px",
+    fontWeight: "700",
+    color: "#1F2937"
+};
+
+const chartContainerStyle = {
+    background: "#F9FAFB",
+    padding: "24px",
+    borderRadius: "12px",
+    border: "1px solid #E5E7EB"
 };
 
 export default Dashboard;
