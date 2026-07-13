@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .status-online {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-offline {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .status-info:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .status-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .status-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .endpoints-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .endpoints-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .endpoint-group {
+            margin-bottom: 20px;
+        }
+
+        .endpoint-group-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .endpoint-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .endpoint-item:hover {
+            background: #e9ecef;
+        }
+
+        .method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85em;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .method-get {
+            background-color: #cfe2ff;
+            color: #084298;
+        }
+
+        .method-post {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            color: #333;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .endpoint-desc {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric-item {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .icon {
+            font-size: 1.3em;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .refresh-btn:active {
+            transform: scale(0.95);
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            color: #666;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-btn:hover {
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .data-table th {
+            background: #f0f4ff;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #fafbff;
+        }
+
+        .truncate {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .search-box {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .badge-success {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #664d03;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .endpoint-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .data-table {
+                font-size: 0.9em;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 8px;
+            }
+
+            .truncate {
+                max-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Server Admin Dashboard</h1>
+            <p>Business Analytics API - Real-time Status & Metrics</p>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">🟢</span> Server Status
+                </div>
+                <div class="status-info">
+                    <span class="status-label">Status:</span>
+                    <span class="status-badge status-online">ONLINE</span>
+                </div>
+                <div class="status-info">
+                    <span class="status-label">Uptime:</span>
+                    <span class="status-value" id="uptime">--</span>
+                </div>
+                <div class="status-info">
+                    <span class="status-label">Port:</span>
+                    <span class="status-value" id="port">3000</span>
+                </div>
+                <div class="status-info">
+                    <span class="status-label">Environment:</span>
+                    <span class="status-value" id="environment">Development</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">🗄️</span> Database
+                </div>
+                <div class="status-info">
+                    <span class="status-label">Database:</span>
+                    <span class="status-value">Snowflake</span>
+                </div>
+                <div class="status-info">
+                    <span class="status-label">Connection:</span>
+                    <span class="status-badge status-online" id="db-status">Connected</span>
+                </div>
+                <div class="status-info">
+                    <span class="status-label">Warehouse:</span>
+                    <span class="status-value" id="warehouse">Configured</span>
+                </div>
+                <div class="status-info">
+                    <span class="status-label">Last Updated:</span>
+                    <span class="status-value" id="lastUpdate">Just now</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">📊</span> Quick Metrics
+                </div>
+                <div class="status-info">
+                    <span class="status-label">Total Requests:</span>
+                    <span class="status-value" id="totalRequests">0</span>
+                </div>
+                <div class="status-info">
+                    <span class="status-label">Success Rate:</span>
+                    <span class="status-value" id="successRate">100%</span>
+                </div>
+                <div class="status-info">
+                    <span class="status-label">Avg Response Time:</span>
+                    <span class="status-value" id="avgResponseTime">--ms</span>
+                </div>
+                <div class="status-info">
+                    <span class="status-label">API Version:</span>
+                    <span class="status-value">1.0.0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoints-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 class="endpoints-title">� Data Viewer</h2>                <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('products')">📦 Products</button>
+                <button class="tab-btn" onclick="switchTab('orders')">🛒 Orders</button>
+                <button class="tab-btn" onclick="switchTab('customers')">👥 Customers</button>
+                <button class="tab-btn" onclick="switchTab('revenue')">💰 Revenue</button>
+            </div>
+
+            <!-- Products Tab -->
+            <div id="products" class="tab-content active">
+                <div class="search-box">
+                    <input type="text" id="productSearch" placeholder="Search products..." onkeyup="filterTable('productSearch', 'productsTable')">
+                </div>
+                <div id="productsLoading" class="loading">Loading products...</div>
+                <table id="productsTable" class="data-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsBody"></tbody>
+                </table>
+                <div id="productsError" class="error" style="display: none;"></div>
+            </div>
+
+            <!-- Orders Tab -->
+            <div id="orders" class="tab-content">
+                <div class="search-box">
+                    <input type="text" id="orderSearch" placeholder="Search orders..." onkeyup="filterTable('orderSearch', 'ordersTable')">
+                </div>
+                <div id="ordersLoading" class="loading">Loading orders...</div>
+                <table id="ordersTable" class="data-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Order Date</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Total Price</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersBody"></tbody>
+                </table>
+                <div id="ordersError" class="error" style="display: none;"></div>
+            </div>
+
+            <!-- Customers Tab -->
+            <div id="customers" class="tab-content">
+                <div class="search-box">
+                    <input type="text" id="customerSearch" placeholder="Search customers..." onkeyup="filterTable('customerSearch', 'customersTable')">
+                </div>
+                <div id="customersLoading" class="loading">Loading customers...</div>
+                <table id="customersTable" class="data-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Customer ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>City</th>
+                            <th>Country</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customersBody"></tbody>
+                </table>
+                <div id="customersError" class="error" style="display: none;"></div>
+            </div>
+
+            <!-- Revenue Tab -->
+            <div id="revenue" class="tab-content">
+                <div id="revenueLoading" class="loading">Loading revenue data...</div>
+                <table id="revenueTable" class="data-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody id="revenueBody"></tbody>
+                </table>
+                <div id="revenueError" class="error" style="display: none;"></div>
+            </div>
+        </div>
+
+            <div class="endpoint-group">
+                <div class="endpoint-group-title">Core</div>
+                <div class="endpoint-item">
+                    <span class="method method-get">GET</span>
+                    <span class="endpoint-path">/</span>
+                    <span class="endpoint-desc">API health check</span>
+                </div>
+            </div>
+
+            <div class="endpoint-group">
+                <div class="endpoint-group-title">Data Endpoints</div>
+                <div class="endpoint-item">
+                    <span class="method method-get">GET</span>
+                    <span class="endpoint-path">/orders</span>
+                    <span class="endpoint-desc">Fetch all orders</span>
+                </div>
+                <div class="endpoint-item">
+                    <span class="method method-get">GET</span>
+                    <span class="endpoint-path">/products</span>
+                    <span class="endpoint-desc">Fetch all products</span>
+                </div>
+                <div class="endpoint-item">
+                    <span class="method method-get">GET</span>
+                    <span class="endpoint-path">/customers</span>
+                    <span class="endpoint-desc">Fetch all customers</span>
+                </div>
+            </div>
+
+            <div class="endpoint-group">
+                <div class="endpoint-group-title">Analytics</div>
+                <div class="endpoint-item">
+                    <span class="method method-get">GET</span>
+                    <span class="endpoint-path">/dashboard</span>
+                    <span class="endpoint-desc">Dashboard summary metrics</span>
+                </div>
+                <div class="endpoint-item">
+                    <span class="method method-get">GET</span>
+                    <span class="endpoint-path">/top-products</span>
+                    <span class="endpoint-desc">Top 10 best-selling products</span>
+                </div>
+                <div class="endpoint-item">
+                    <span class="method method-get">GET</span>
+                    <span class="endpoint-path">/revenue</span>
+                    <span class="endpoint-desc">Daily revenue data</span>
+                </div>
+            </div>
+
+            <div class="endpoint-group">
+                <div class="endpoint-group-title">Admin</div>
+                <div class="endpoint-item">
+                    <span class="method method-get">GET</span>
+                    <span class="endpoint-path">/admin/status</span>
+                    <span class="endpoint-desc">Server status & metrics</span>
+                </div>
+                <div class="endpoint-item">
+                    <span class="method method-get">GET</span>
+                    <span class="endpoint-path">/admin/dashboard</span>
+                    <span class="endpoint-desc">Admin dashboard page</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Business Analytics API • Version 1.0.0 • © 2024</p>
+            <p>Powered by Express + Snowflake</p>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab and activate button
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Load data for the selected tab
+            if (tabName === 'products') loadProducts();
+            else if (tabName === 'orders') loadOrders();
+            else if (tabName === 'customers') loadCustomers();
+            else if (tabName === 'revenue') loadRevenue();
+        }
+
+        // Fetch and display products
+        async function loadProducts() {
+            try {
+                const response = await fetch('/products');
+                if (!response.ok) throw new Error('Failed to fetch products');
+                const data = await response.json();
+
+                const tbody = document.getElementById('productsBody');
+                tbody.innerHTML = '';
+
+                if (data.length === 0) {
+                    document.getElementById('productsError').textContent = 'No products found';
+                    document.getElementById('productsError').style.display = 'block';
+                    document.getElementById('productsLoading').style.display = 'none';
+                    return;
+                }
+
+                data.forEach((product) => {
+                    const row = tbody.insertRow();
+                    const status = product.STOCK_STATUS || 'Unknown';
+                    const statusClass = status === 'Out of Stock' ? 'badge-warning' : 'badge-success';
+                    
+                    row.innerHTML = `
+                        <td>${product.PRODUCT_ID || '--'}</td>
+                        <td class="truncate">${product.PRODUCT_NAME || '--'}</td>
+                        <td>${product.CATEGORY || '--'}</td>
+                        <td>${(product.SALE_PRICE || 0).toFixed(2)}</td>
+                        <td><span class="badge ${statusClass}">${product.STOCK_QUANTITY || 0}</span></td>
+                    `;
+                });
+
+                document.getElementById('productsLoading').style.display = 'none';
+                document.getElementById('productsTable').style.display = 'table';
+                document.getElementById('productsError').style.display = 'none';
+            } catch (error) {
+                console.error('Error loading products:', error);
+                document.getElementById('productsError').textContent = '❌ ' + error.message;
+                document.getElementById('productsError').style.display = 'block';
+                document.getElementById('productsLoading').style.display = 'none';
+            }
+        }
+
+        // Fetch and display orders
+        async function loadOrders() {
+            try {
+                const response = await fetch('/orders');
+                if (!response.ok) throw new Error('Failed to fetch orders');
+                const data = await response.json();
+
+                const tbody = document.getElementById('ordersBody');
+                tbody.innerHTML = '';
+
+                if (data.length === 0) {
+                    document.getElementById('ordersError').textContent = 'No orders found';
+                    document.getElementById('ordersError').style.display = 'block';
+                    document.getElementById('ordersLoading').style.display = 'none';
+                    return;
+                }
+
+                data.slice(0, 100).forEach((order) => {
+                    const orderDate = new Date(order.ORDER_DATE).toLocaleDateString();
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${order.ORDER_ID || '--'}</td>
+                        <td>${orderDate}</td>
+                        <td class="truncate">${order.PRODUCT_NAME || '--'}</td>
+                        <td><span class="badge badge-primary">${order.QUANTITY || 0}</span></td>
+                        <td>${(order.TOTAL_PRICE || 0).toFixed(2)}</td>
+                        <td><span class="badge badge-success">✓ Completed</span></td>
+                    `;
+                });
+
+                document.getElementById('ordersLoading').style.display = 'none';
+                document.getElementById('ordersTable').style.display = 'table';
+                document.getElementById('ordersError').style.display = 'none';
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                document.getElementById('ordersError').textContent = '❌ ' + error.message;
+                document.getElementById('ordersError').style.display = 'block';
+                document.getElementById('ordersLoading').style.display = 'none';
+            }
+        }
+
+        // Fetch and display customers
+        async function loadCustomers() {
+            try {
+                const response = await fetch('/customers');
+                if (!response.ok) throw new Error('Failed to fetch customers');
+                const data = await response.json();
+
+                const tbody = document.getElementById('customersBody');
+                tbody.innerHTML = '';
+
+                if (!data || data.length === 0) {
+                    document.getElementById('customersError').innerHTML = '⚠️ No customer data available in CUSTOMERS table. Showing unique customers from orders instead...';
+                    document.getElementById('customersError').style.display = 'block';
+                    
+                    // Fetch from orders as fallback
+                    try {
+                        const ordersResponse = await fetch('/orders');
+                        const orders = await ordersResponse.json();
+                        
+                        if (orders && orders.length > 0) {
+                            // Extract unique customers
+                            const uniqueCustomers = [];
+                            const seen = new Set();
+                            
+                            orders.forEach(order => {
+                                const email = order.EMAIL || 'unknown';
+                                if (!seen.has(email)) {
+                                    seen.add(email);
+                                    uniqueCustomers.push({
+                                        CUSTOMER_ID: order.CUSTOMER_ID || 'N/A',
+                                        CUSTOMER_NAME: order.CUSTOMER_NAME || 'Unknown',
+                                        EMAIL: email,
+                                        CITY: order.CITY || '--',
+                                        COUNTRY: order.COUNTRY || '--'
+                                    });
+                                }
+                            });
+                            
+                            uniqueCustomers.slice(0, 50).forEach((customer) => {
+                                const row = tbody.insertRow();
+                                row.innerHTML = `
+                                    <td>${customer.CUSTOMER_ID}</td>
+                                    <td>${customer.CUSTOMER_NAME}</td>
+                                    <td class="truncate">${customer.EMAIL}</td>
+                                    <td>${customer.CITY}</td>
+                                    <td>${customer.COUNTRY}</td>
+                                `;
+                            });
+                            
+                            document.getElementById('customersLoading').style.display = 'none';
+                            document.getElementById('customersTable').style.display = 'table';
+                        }
+                    } catch (e) {
+                        console.error('Error loading fallback customers:', e);
+                    }
+                    return;
+                }
+
+                data.slice(0, 50).forEach((customer) => {
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${customer.CUSTOMER_ID || '--'}</td>
+                        <td>${customer.CUSTOMER_NAME || customer.NAME || '--'}</td>
+                        <td class="truncate">${customer.EMAIL || '--'}</td>
+                        <td>${customer.CITY || '--'}</td>
+                        <td>${customer.COUNTRY || '--'}</td>
+                    `;
+                });
+
+                document.getElementById('customersLoading').style.display = 'none';
+                document.getElementById('customersTable').style.display = 'table';
+                document.getElementById('customersError').style.display = 'none';
+            } catch (error) {
+                console.error('Error loading customers:', error);
+                document.getElementById('customersError').textContent = '❌ ' + error.message;
+                document.getElementById('customersError').style.display = 'block';
+                document.getElementById('customersLoading').style.display = 'none';
+            }
+        }
+
+        // Fetch and display revenue
+        async function loadRevenue() {
+            try {
+                const response = await fetch('/revenue');
+                if (!response.ok) throw new Error('Failed to fetch revenue');
+                const data = await response.json();
+
+                const tbody = document.getElementById('revenueBody');
+                tbody.innerHTML = '';
+
+                if (data.length === 0) {
+                    document.getElementById('revenueError').textContent = 'No revenue data found';
+                    document.getElementById('revenueError').style.display = 'block';
+                    document.getElementById('revenueLoading').style.display = 'none';
+                    return;
+                }
+
+                data.forEach((item) => {
+                    const row = tbody.insertRow();
+                    const date = new Date(item.SALES_DATE).toLocaleDateString();
+                    row.innerHTML = `
+                        <td>${date}</td>
+                        <td><span class="badge badge-success">${(item.REVENUE || 0).toFixed(2)}</span></td>
+                    `;
+                });
+
+                document.getElementById('revenueLoading').style.display = 'none';
+                document.getElementById('revenueTable').style.display = 'table';
+                document.getElementById('revenueError').style.display = 'none';
+            } catch (error) {
+                console.error('Error loading revenue:', error);
+                document.getElementById('revenueError').textContent = '❌ ' + error.message;
+                document.getElementById('revenueError').style.display = 'block';
+                document.getElementById('revenueLoading').style.display = 'none';
+            }
+        }
+
+        // Filter table by search
+        function filterTable(searchId, tableId) {
+            const searchText = document.getElementById(searchId).value.toLowerCase();
+            const table = document.getElementById(tableId);
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchText) ? '' : 'none';
+            });
+        }
+
+        // Update uptime
+        const startTime = Date.now();
+        
+        function updateUptime() {
+            const uptime = Math.floor((Date.now() - startTime) / 1000);
+            const hours = Math.floor(uptime / 3600);
+            const minutes = Math.floor((uptime % 3600) / 60);
+            const seconds = uptime % 60;
+            
+            document.getElementById('uptime').textContent = 
+                `${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        setInterval(updateUptime, 1000);
+        updateUptime();
+
+        // Fetch server metrics
+        async function fetchMetrics() {
+            try {
+                const response = await fetch('/admin/status');
+                const data = await response.json();
+                
+                document.getElementById('totalRequests').textContent = data.totalRequests || 0;
+                document.getElementById('avgResponseTime').textContent = 
+                    (data.avgResponseTime || 0).toFixed(2) + 'ms';
+                document.getElementById('successRate').textContent = 
+                    (data.successRate || 100).toFixed(1) + '%';
+                document.getElementById('lastUpdate').textContent = 'Just now';
+            } catch (error) {
+                console.log('Could not fetch metrics (expected in dev)');
+            }
+        }
+
+        // Initial fetch and periodic updates
+        fetchMetrics();
+        setInterval(fetchMetrics, 5000);
+
+        // Load products on page load
+        function initDashboard() {
+            loadProducts();
+            console.log('%c✅ Admin Dashboard Loaded', 'color: green; font-size: 14px; font-weight: bold;');
+        }
+
+        // Try to load immediately, and also on window load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initDashboard);
+        } else {
+            setTimeout(initDashboard, 100);
+        }
+    </script>
+</body>
+</html>
